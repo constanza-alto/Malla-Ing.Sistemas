@@ -2,141 +2,176 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Malla Medicina UBA</title>
+  <title>Malla Curricular ISI - UNS</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
+      background-color: #f4f8fb;
       margin: 0;
-      padding: 1em;
+      padding: 1rem;
     }
     h1 {
       text-align: center;
-      color: #336699;
+      color: #2c3e50;
     }
-    .grid {
-      display: flex;
-      gap: 1em;
-      justify-content: center;
-      flex-wrap: wrap;
+    .malla {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
     }
-    .year {
-      background-color: #eef2f7;
-      border-radius: 8px;
-      padding: 1em;
-      min-width: 200px;
+    .anio {
+      background: #ecf0f1;
+      padding: 1rem;
+      border-radius: 10px;
     }
-    .year h2 {
+    .anio h2 {
       text-align: center;
-      color: #446688;
+      color: #34495e;
     }
-    .subject {
-      margin: 0.5em 0;
-      padding: 0.5em;
-      border-radius: 5px;
+    .materia {
+      background: #ffffff;
+      border: 2px solid #bdc3c7;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      border-radius: 6px;
       cursor: pointer;
-      background-color: #fff;
-      border: 1px solid #ccc;
       position: relative;
+      transition: background 0.3s;
     }
-    .subject.approved {
-      background-color: #d0f0c0;
-      border-color: #6c6;
+    .materia:hover {
+      background: #e9f7ef;
     }
-    .subject.locked {
-      background-color: #f0f0f0;
-      color: #aaa;
+    .aprobada {
+      background-color: #2ecc71 !important;
+      color: white;
+      border-color: #27ae60;
+    }
+    .bloqueada {
+      background-color: #dcdde1;
       cursor: not-allowed;
     }
-    .subject.locked::after {
+    .materia[data-tooltip]:hover::after {
       content: attr(data-tooltip);
       position: absolute;
+      background: #2c3e50;
+      color: #fff;
+      padding: 5px;
+      border-radius: 5px;
       top: 100%;
       left: 0;
-      background: #333;
-      color: white;
-      font-size: 0.8em;
-      padding: 0.3em 0.5em;
-      border-radius: 4px;
       white-space: pre-line;
-      display: none;
-    }
-    .subject.locked:hover::after {
-      display: block;
+      font-size: 0.8rem;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
-  <h1>Malla Curricular - Medicina UBA</h1>
-  <div class="grid" id="malla"></div>
+  <h1>Malla Curricular - Ingeniería en Sistemas de Información (UNS)</h1>
+  <div class="malla" id="malla"></div>
 
   <script>
     const materias = [
-      { id: 'anatomia', nombre: 'Anatomía', anio: 1, requisitos: [] },
-      { id: 'biologia', nombre: 'Biología', anio: 1, requisitos: [] },
-      { id: 'histologia', nombre: 'Histología', anio: 1, requisitos: ['biologia'] },
-      { id: 'fisiologia', nombre: 'Fisiología', anio: 2, requisitos: ['anatomia', 'histologia'] },
-      { id: 'bioquimica', nombre: 'Bioquímica', anio: 2, requisitos: ['biologia'] },
-      { id: 'farmacologia', nombre: 'Farmacología', anio: 3, requisitos: ['bioquimica', 'fisiologia'] },
+      // PRIMER AÑO
+      { id: "algoritmos", nombre: "Resolución de Problemas y Algoritmos", anio: 1 },
+      { id: "algebra", nombre: "Elementos de Álgebra y Geometría", anio: 1 },
+      { id: "analisis1", nombre: "Análisis Matemático I", anio: 1 },
+      { id: "oop", nombre: "Intro a la Programación O.O.", anio: 1, requisitos: ["algoritmos", "algebra"] },
+      { id: "lfa", nombre: "Lenguajes Formales y Autómatas", anio: 1, requisitos: ["algoritmos", "algebra"] },
+      { id: "introSW", nombre: "Intro a la Ing. de Software", anio: 1 },
+
+      // SEGUNDO AÑO
+      { id: "analisis2", nombre: "Análisis Matemático II", anio: 2, requisitos: ["algebra", "analisis1"] },
+      { id: "estructuras", nombre: "Estructuras de Datos", anio: 2, requisitos: ["analisis1", "oop"] },
+      { id: "computabilidad", nombre: "Teoría de la Computabilidad", anio: 2, requisitos: ["oop", "lfa"] },
+      { id: "tecprog", nombre: "Tecnología de Programación", anio: 2, requisitos: ["estructuras"] },
+      { id: "orga", nombre: "Organización de Computadoras", anio: 2, requisitos: ["lfa", "estructuras"] },
+      { id: "modelosSW", nombre: "Modelos de Software", anio: 2, requisitos: ["lfa", "oop", "introSW"] },
+      { id: "estadistica", nombre: "Modelos Estadísticos", anio: 2, requisitos: ["lfa", "analisis1", "algoritmos"] },
+
+      // TERCER AÑO
+      { id: "logica", nombre: "Lógica para CC", anio: 3, requisitos: ["tecprog", "computabilidad"] },
+      { id: "req", nombre: "Requerimientos de Sistemas", anio: 3, requisitos: ["tecprog", "modelosSW", "estructuras"] },
+      { id: "arqui", nombre: "Arquitectura de Computadoras", anio: 3, requisitos: ["orga", "lfa"] },
+      { id: "metodos", nombre: "Métodos Formales", anio: 3, requisitos: ["req", "logica", "tecprog", "modelosSW"] },
+      { id: "quimica", nombre: "Química", anio: 3, requisitos: ["analisis1"] },
+      { id: "so", nombre: "Sistemas Operativos", anio: 3, requisitos: ["arqui", "orga"] },
+      { id: "bd", nombre: "Bases de Datos", anio: 3, requisitos: ["req", "logica", "modelosSW"] },
+
+      // CUARTO AÑO
+      { id: "web", nombre: "Ingeniería Web", anio: 4, requisitos: ["so", "bd", "req"] },
+      { id: "disenio", nombre: "Arq. y Diseño de Sistemas", anio: 4, requisitos: ["metodos", "bd", "req"] },
+      { id: "algcomp", nombre: "Algoritmos y Complejidad", anio: 4, requisitos: ["logica", "tecprog"] },
+      { id: "proyectos", nombre: "Proyectos de Sistemas", anio: 4, requisitos: ["disenio", "bd"] },
+      { id: "verificacion", nombre: "Verificación y Validación", anio: 4, requisitos: ["algcomp", "disenio", "metodos"] },
+      { id: "fisica1", nombre: "Física I", anio: 4, requisitos: ["analisis1", "algebra"] },
+
+      // QUINTO AÑO
+      { id: "calidad", nombre: "Gestión de Calidad", anio: 5, requisitos: ["proyectos", "verificacion", "disenio"] },
+      { id: "practica", nombre: "Práctica Profesional", anio: 5, requisitos: ["logica", "bd", "so"] },
+      { id: "economia", nombre: "Economía", anio: 5, requisitos: ["proyectos"] },
+      { id: "redes", nombre: "Redes de Computadoras", anio: 5, requisitos: ["so", "arqui"] },
+      { id: "auditoria", nombre: "Auditoría de Sistemas", anio: 5, requisitos: ["proyectos"] },
+      { id: "ia", nombre: "Sistemas Inteligentes", anio: 5, requisitos: ["bd", "estadistica"] },
+      { id: "fisica2", nombre: "Física II", anio: 5, requisitos: ["fisica1", "analisis2"] },
+      { id: "proyectoFinal", nombre: "Proyecto Final", anio: 5, requisitos: ["proyectos", "verificacion"] },
     ];
 
-    const progreso = JSON.parse(localStorage.getItem('materias_aprobadas')) || [];
+    const aprobadas = JSON.parse(localStorage.getItem("aprobadasISI")) || [];
 
     function guardarProgreso() {
-      localStorage.setItem('materias_aprobadas', JSON.stringify(progreso));
-    }
-
-    function estaHabilitada(materia) {
-      return materia.requisitos.every(id => progreso.includes(id));
+      localStorage.setItem("aprobadasISI", JSON.stringify(aprobadas));
     }
 
     function crearMalla() {
-      const contenedor = document.getElementById('malla');
-      contenedor.innerHTML = '';
-
-      const porAnio = {};
-      materias.forEach(m => {
-        if (!porAnio[m.anio]) porAnio[m.anio] = [];
-        porAnio[m.anio].push(m);
-      });
-
-      for (const anio in porAnio) {
-        const col = document.createElement('div');
-        col.className = 'year';
-        col.innerHTML = `<h2>${anio}° Año</h2>`;
-        porAnio[anio].forEach(m => {
-          const div = document.createElement('div');
-          div.className = 'subject';
-          div.textContent = m.nombre;
-
-          if (progreso.includes(m.id)) {
-            div.classList.add('approved');
-          } else if (!estaHabilitada(m)) {
-            div.classList.add('locked');
-            const faltan = m.requisitos.filter(r => !progreso.includes(r))
-                                       .map(r => materias.find(m => m.id === r).nombre);
-            div.setAttribute('data-tooltip', 'Falta: ' + faltan.join('\n'));
-          }
-
-          div.onclick = () => {
-            if (div.classList.contains('locked')) return;
-            if (progreso.includes(m.id)) {
-              progreso.splice(progreso.indexOf(m.id), 1);
-            } else {
-              progreso.push(m.id);
-            }
-            guardarProgreso();
-            crearMalla();
-          };
-
-          col.appendChild(div);
+      const contenedor = document.getElementById("malla");
+      for (let i = 1; i <= 5; i++) {
+        const columna = document.createElement("div");
+        columna.className = "anio";
+        columna.innerHTML = `<h2>${i}° Año</h2>`;
+        materias.filter(m => m.anio === i).forEach(materia => {
+          const div = document.createElement("div");
+          div.className = "materia";
+          div.textContent = materia.nombre;
+          div.id = materia.id;
+          columna.appendChild(div);
         });
-        contenedor.appendChild(col);
+        contenedor.appendChild(columna);
       }
     }
 
+    function actualizarMalla() {
+      materias.forEach(m => {
+        const div = document.getElementById(m.id);
+        div.className = "materia";
+        div.removeAttribute("data-tooltip");
+
+        const aprobada = aprobadas.includes(m.id);
+        const requisitosCumplidos = !m.requisitos || m.requisitos.every(r => aprobadas.includes(r));
+
+        if (aprobada) {
+          div.classList.add("aprobada");
+        } else if (!requisitosCumplidos) {
+          div.classList.add("bloqueada");
+          const faltantes = m.requisitos.filter(r => !aprobadas.includes(r));
+          div.setAttribute("data-tooltip", "Falta aprobar:\n" + faltantes.map(id => materias.find(x => x.id === id).nombre).join("\n"));
+        }
+
+        div.onclick = () => {
+          if (!requisitosCumplidos) return;
+          if (aprobadas.includes(m.id)) {
+            aprobadas.splice(aprobadas.indexOf(m.id), 1);
+          } else {
+            aprobadas.push(m.id);
+          }
+          guardarProgreso();
+          actualizarMalla();
+        };
+      });
+    }
+
     crearMalla();
+    actualizarMalla();
   </script>
 </body>
 </html>
