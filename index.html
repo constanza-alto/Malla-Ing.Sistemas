@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Medicina UBA</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 1em;
+    }
+    h1 {
+      text-align: center;
+      color: #336699;
+    }
+    .grid {
+      display: flex;
+      gap: 1em;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .year {
+      background-color: #eef2f7;
+      border-radius: 8px;
+      padding: 1em;
+      min-width: 200px;
+    }
+    .year h2 {
+      text-align: center;
+      color: #446688;
+    }
+    .subject {
+      margin: 0.5em 0;
+      padding: 0.5em;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      position: relative;
+    }
+    .subject.approved {
+      background-color: #d0f0c0;
+      border-color: #6c6;
+    }
+    .subject.locked {
+      background-color: #f0f0f0;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+    .subject.locked::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #333;
+      color: white;
+      font-size: 0.8em;
+      padding: 0.3em 0.5em;
+      border-radius: 4px;
+      white-space: pre-line;
+      display: none;
+    }
+    .subject.locked:hover::after {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular - Medicina UBA</h1>
+  <div class="grid" id="malla"></div>
+
+  <script>
+    const materias = [
+      { id: 'anatomia', nombre: 'Anatomía', anio: 1, requisitos: [] },
+      { id: 'biologia', nombre: 'Biología', anio: 1, requisitos: [] },
+      { id: 'histologia', nombre: 'Histología', anio: 1, requisitos: ['biologia'] },
+      { id: 'fisiologia', nombre: 'Fisiología', anio: 2, requisitos: ['anatomia', 'histologia'] },
+      { id: 'bioquimica', nombre: 'Bioquímica', anio: 2, requisitos: ['biologia'] },
+      { id: 'farmacologia', nombre: 'Farmacología', anio: 3, requisitos: ['bioquimica', 'fisiologia'] },
+    ];
+
+    const progreso = JSON.parse(localStorage.getItem('materias_aprobadas')) || [];
+
+    function guardarProgreso() {
+      localStorage.setItem('materias_aprobadas', JSON.stringify(progreso));
+    }
+
+    function estaHabilitada(materia) {
+      return materia.requisitos.every(id => progreso.includes(id));
+    }
+
+    function crearMalla() {
+      const contenedor = document.getElementById('malla');
+      contenedor.innerHTML = '';
+
+      const porAnio = {};
+      materias.forEach(m => {
+        if (!porAnio[m.anio]) porAnio[m.anio] = [];
+        porAnio[m.anio].push(m);
+      });
+
+      for (const anio in porAnio) {
+        const col = document.createElement('div');
+        col.className = 'year';
+        col.innerHTML = `<h2>${anio}° Año</h2>`;
+        porAnio[anio].forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'subject';
+          div.textContent = m.nombre;
+
+          if (progreso.includes(m.id)) {
+            div.classList.add('approved');
+          } else if (!estaHabilitada(m)) {
+            div.classList.add('locked');
+            const faltan = m.requisitos.filter(r => !progreso.includes(r))
+                                       .map(r => materias.find(m => m.id === r).nombre);
+            div.setAttribute('data-tooltip', 'Falta: ' + faltan.join('\n'));
+          }
+
+          div.onclick = () => {
+            if (div.classList.contains('locked')) return;
+            if (progreso.includes(m.id)) {
+              progreso.splice(progreso.indexOf(m.id), 1);
+            } else {
+              progreso.push(m.id);
+            }
+            guardarProgreso();
+            crearMalla();
+          };
+
+          col.appendChild(div);
+        });
+        contenedor.appendChild(col);
+      }
+    }
+
+    crearMalla();
+  </script>
+</body>
+</html>
